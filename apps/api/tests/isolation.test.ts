@@ -190,7 +190,15 @@ ATAQUES.push(
 );
 
 /** Rutas que no operan sobre datos de un arquero y no necesitan ataque. */
-const SIN_DUENO = [/^\/health$/, /^\/ready$/, /^\/api\/v1\/auth\//, /^\/\*$/, /^\/$/];
+const SIN_DUENO = [
+  /^\/health$/,
+  /^\/ready$/,
+  /^\/api\/v1\/auth\//,
+  // El contrato de la API: publico a proposito y no toca datos de nadie.
+  /^\/api\/v1\/docs$/,
+  /^\/\*$/,
+  /^\/$/,
+];
 
 describe('aislamiento por usuario', () => {
   it.each(ATAQUES.map((a, i) => [i, `${a.method} ${a.template}`, a] as const))(

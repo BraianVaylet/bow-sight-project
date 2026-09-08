@@ -22,7 +22,8 @@ src/
   notifications/    puerto de mail, plantillas ES/EN, Resend
   http/             requestId, cabeceras, errores tipados, error handler
   observability/    logger Pino
-  routes/           health
+  openapi/          catalogo de rutas y generador del contrato
+  routes/           health · docs
   modules/<mod>/    domain · application · infrastructure   (desde F0-15)
 ```
 
@@ -52,6 +53,8 @@ src/
 4. Dominio, caso de uso, infraestructura, en ese orden.
 5. Registrar la ruta con sus schemas, sus codigos y **su fixture de ataque**. Sin el fixture, la
    suite de aislamiento no compila y el CI falla.
+6. Agregar su entrada en `src/openapi/catalog.ts`. Sin ella, **`createApp` no levanta**: el contrato
+   se arma leyendo las rutas montadas, y una ruta sin documentar rompe el arranque y el CI.
 
 ## Inyeccion de dependencias
 
@@ -88,6 +91,25 @@ deploy desde un solo lugar. Prohibido tocar Atlas a mano.
 
 Los tests levantan su propio replica set en memoria (`tests/mongo.ts`): no hace falta tener Mongo
 instalado para correrlos.
+
+## El contrato
+
+`GET /api/v1/docs` devuelve el OpenAPI, **generado desde `app.routes`**. La lista de rutas sale de la
+app montada de verdad y la descripcion de cada una de `src/openapi/catalog.ts`; los cuerpos salen de
+los mismos schemas de Zod que validan en runtime, via `z.toJSONSchema`.
+
+🔴 **Una ruta montada sin entrada en el catalogo hace fallar `createApp`.** Es el gemelo del fixture
+de ataque: la unica forma de que la documentacion no quede desactualizada es que no arranque cuando
+lo esta. El test tambien verifica lo contrario —documentar algo que no existe manda a un integrador
+a escribir codigo contra un 404— y que todo codigo de error citado este declarado en `docs/errors.md`.
+
+🔴 **Se sirve JSON y nada mas.** Montar un visor significa cargar un script de un CDN en el **mismo
+origen que la cookie de sesion**: quien controle ese CDN tendria ejecucion de codigo justo donde vive
+`bs.session_token`.
+
+Es publico y va **antes** de la zona protegida: un contrato que exige sesion para leerse no es un
+contrato. El documento se arma sobre una **foto** de las rutas tomada al final de `createApp`, asi
+que lo que alguien monte despues —el buzon de mails del arnes de E2E, por ejemplo— no entra.
 
 ## Healthchecks
 

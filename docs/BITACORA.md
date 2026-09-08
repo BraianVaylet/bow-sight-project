@@ -23,6 +23,41 @@ No se registra: refactors internos sin impacto observable ni cambios de formato.
 
 ---
 
+## 2026-09-08 — OpenAPI generado desde el registro de rutas
+
+- **Modulo:** `api`
+- **Tipo:** feature
+- **Commit/PR:** https://github.com/BraianVaylet/bow-sight-project/pull/1
+- **Trello:** https://trello.com/c/h77TW7cP (F0-16)
+- **Que cambio:** `GET /api/v1/docs` devuelve el contrato de la API en OpenAPI 3.1, con sus 20
+  rutas, sus parametros, sus cuerpos y sus codigos de error.
+- **Por que:** era un hueco declarado en el PR. La tarjeta F0-16 planteaba el OpenAPI saliendo del
+  mismo registro de rutas y se cerro sin esa parte; el `Definition of Done` lo pide y la casilla
+  estaba sin marcar.
+- **Impacto:** una ruta publica nueva. Ningun cambio en el modelo de datos.
+- **Como esta armado, que es lo que importa:**
+  - La lista de rutas sale de **`app.routes`**: la app montada de verdad. La descripcion de cada una
+    sale de un catalogo declarativo, y los cuerpos de los **mismos schemas de Zod** que validan en
+    runtime (`z.toJSONSchema`). No hay una segunda copia de ninguna regla.
+  - 🔴 **Una ruta montada sin entrada en el catalogo hace fallar `createApp`.** Es el gemelo del
+    fixture de ataque de la suite de aislamiento: la unica forma de que la documentacion no quede
+    desactualizada es que no arranque cuando lo esta. El test verifica tambien el sentido contrario
+    —documentar algo que ya no existe manda a un integrador a escribir codigo contra un 404— y que
+    todo codigo de error citado este declarado en `docs/errors.md`.
+- 🔴 **Se sirve JSON y nada mas, y no es pereza.** Montar un visor de OpenAPI significa cargar un
+  script de un CDN en el **mismo origen que la cookie de sesion**: quien controle ese CDN tendria
+  ejecucion de codigo justo donde vive `bs.session_token`. El JSON lo abre cualquier cliente de
+  OpenAPI desde afuera, sin pedirnos esa superficie.
+- **Dos cosas que aparecieron armandolo:**
+  - `/docs` caia bajo el `use('*')` de la zona protegida y respondia **401**. Un contrato que exige
+    sesion para leerse no es un contrato: se registra **antes** de esa barrera.
+  - El documento se armaba leyendo `app.routes` en el momento del pedido, asi que veia lo que
+    alguien montara **despues** de `createApp` — el arnes de E2E le agrega un buzon de mails que no
+    es parte del producto, y el contrato respondia 500. Ahora se arma sobre una **foto** tomada al
+    final de `createApp`.
+- **Verificado por HTTP**, no solo en tests: 20 rutas, `calculate` con sus cuatro parametros y sus
+  respuestas 200/401/404/422, y el buzon del arnes fuera del contrato.
+
 ## 2026-09-08 — Cierre de la Fase 0: 19 de 21, con una bloqueada y una a medias
 
 - **Modulo:** `docs`

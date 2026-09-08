@@ -514,6 +514,18 @@
   - Y despues de los veinte ataques, un test comprueba que **los datos de la victima siguen
     intactos**: que ninguno haya entregado nada no alcanza si alguno escribio.
 
+- **estado del OpenAPI:** la tarjeta planteaba que el contrato saliera del mismo registro de rutas, y
+  eso **quedo sin hacer** cuando se cerro. Se construyo despues, en `apps/api/src/openapi/`:
+  - La lista de rutas sale de `app.routes` —la app montada de verdad—, la descripcion de cada una de
+    un catalogo declarativo, y los cuerpos de los mismos schemas de Zod que validan en runtime, via
+    `z.toJSONSchema`. Nunca hay una segunda copia de una regla.
+  - 🔴 Una ruta montada sin entrada en el catalogo **hace fallar `createApp`**. Es el gemelo del
+    fixture de ataque: la documentacion no puede desactualizarse porque el proceso no arranca cuando
+    lo esta. El test verifica tambien lo contrario —documentar algo que no existe manda a un
+    integrador contra un 404— y que todo codigo citado este declarado en `docs/errors.md`.
+  - 🔴 Se sirve **JSON y nada mas**. Un visor de OpenAPI se monta cargando un script de un CDN, y
+    ese script correria en el **mismo origen que la cookie de sesion**.
+
 ## [x] F0-17 · `apps/pwa`: esqueleto instalable
 
 - **module:** pwa
