@@ -5,6 +5,8 @@ import { requestId } from './http/requestId.js';
 import { securityHeaders } from './http/security.js';
 import { requireAuth } from './auth/middleware.js';
 import { createAuthRoutes } from './auth/routes.js';
+import type { MountedRoute } from './openapi/build.js';
+import { assertDocumentado, createDocsRoutes } from './routes/docs.js';
 import { createHealthRoutes } from './routes/health.js';
 import type { AppDeps, AppEnv } from './types.js';
 
@@ -41,6 +43,15 @@ export function createApp(deps: AppDeps) {
   // El contrato del producto vive bajo `/api/v1`. Los modulos se montan aca a
   // medida que existen (F0-15).
   const v1 = new Hono<AppEnv>();
+
+  // 🔴 El contrato va **antes** de la zona protegida: esa instala un `use('*')`
+  // sobre `/api/v1/*`, y registrado despues el contrato responderia 401. El
+  // documento se arma en el primer pedido, sobre la foto que se toma abajo.
+  let contrato: MountedRoute[] = [];
+  v1.route(
+    '/',
+    createDocsRoutes(() => contrato),
+  );
   if (deps.auth) v1.route('/auth', createAuthRoutes({ auth: deps.auth, pwaUrl: deps.env.PWA_URL }));
 
   // 🔴 Todo lo que sigue exige sesion. El `userId` sale de `requireAuth` y de
@@ -53,6 +64,14 @@ export function createApp(deps: AppDeps) {
   }
 
   app.route('/api/v1', v1);
+
+  // La foto de lo que quedo montado. Se toma aca y no en el pedido: lo que se
+  // agregue despues de `createApp` no es parte del contrato del producto.
+  contrato = app.routes.map((r) => ({ method: r.method, path: r.path }));
+
+  // 🔴 Que falte una ruta en el catalogo tiene que romper el **arranque**, no
+  // aparecer como un hueco que alguien descubre integrando.
+  assertDocumentado(contrato);
 
   return app;
 }
