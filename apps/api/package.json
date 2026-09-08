@@ -1,0 +1,39 @@
+{
+  "name": "@bow-sight/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --passWithNoTests --coverage"
+  },
+  "dependencies": {
+    "@better-auth/mongo-adapter": "^1.7.3",
+    "@bow-sight/domain": "workspace:*",
+    "@bow-sight/schemas": "workspace:*",
+    "@bow-sight/types": "workspace:*",
+    "@hono/node-server": "^1.13.7",
+    "@js-temporal/polyfill": "^0.5.1",
+    "better-auth": "^1.7.3",
+    "hono": "^4.13.5",
+    "mongoose": "^8.24.4",
+    "pino": "^9.14.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@bow-sight/config": "workspace:*",
+    "@types/node": "^22.10.5",
+    "@vitest/coverage-v8": "^4.0.0",
+    "mongodb-memory-server": "^10.4.3",
+    "pino-pretty": "^13.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.13",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.0"
+  }
+}

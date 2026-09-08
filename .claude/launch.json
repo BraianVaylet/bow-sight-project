@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "pwa",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@bow-sight/pwa", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "landing",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@bow-sight/landing", "dev"],
+      "port": 5176
+    }
+  ]
+}

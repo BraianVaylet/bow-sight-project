@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#faf9f7" />
+    <title>Bow Sight</title>
+    <script>
+      // Anti-FOUC: el tema se aplica antes del primer pintado. Sin esto, la app
+      // arranca en claro y salta a oscuro, que al sol es un fogonazo.
+      try {
+        const t = localStorage.getItem('bs-theme');
+        if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

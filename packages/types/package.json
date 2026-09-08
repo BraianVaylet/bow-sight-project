@@ -1,0 +1,22 @@
+{
+  "name": "@bow-sight/types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --passWithNoTests --coverage"
+  },
+  "devDependencies": {
+    "@bow-sight/config": "workspace:*",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.0"
+  }
+}
