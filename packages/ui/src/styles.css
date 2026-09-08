@@ -1,0 +1,179 @@
+/**
+ * Tokens de Bow Sight.
+ *
+ * Las apps importan primero `tailwindcss` y despues este archivo:
+ *
+ *   @import 'tailwindcss';
+ *   @import '@bow-sight/ui/styles.css';
+ *
+ * Los valores crudos viven en variables CSS que cambian con el tema; el bloque
+ * `@theme inline` las expone como utilidades de Tailwind. Es lo que permite que
+ * `bg-surface-1` sea correcto en claro y en oscuro sin duplicar clases.
+ *
+ * Paleta en OKLCH: es perceptualmente uniforme, asi que bajar la luminosidad da
+ * el mismo salto visual en cualquier tono. Con hex habria que ajustar a ojo.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Superficies — blanco calido, no azulado: se lee mejor al sol. */
+  --bs-surface-0: oklch(98.5% 0.006 85);
+  --bs-surface-1: oklch(100% 0 0);
+  --bs-surface-2: oklch(96% 0.008 85);
+
+  /* Texto */
+  --bs-ink-primary: oklch(22% 0.015 70);
+  --bs-ink-secondary: oklch(45% 0.012 70);
+  --bs-ink-muted: oklch(55% 0.01 70);
+
+  /* Bordes */
+  --bs-border-subtle: oklch(90% 0.008 80);
+  --bs-border-strong: oklch(65% 0.012 80);
+
+  /* Acento: el oro de la diana, oscurecido hasta que aguanta texto blanco. */
+  --bs-accent-base: oklch(50% 0.13 60);
+  --bs-accent-strong: oklch(42% 0.12 58);
+  --bs-accent-soft: oklch(94% 0.04 75);
+  --bs-accent-ink: oklch(99% 0 0);
+
+  /* Feedback */
+  --bs-danger: oklch(52% 0.19 27);
+  --bs-danger-soft: oklch(95% 0.03 27);
+  --bs-warning: oklch(55% 0.14 75);
+  --bs-success: oklch(48% 0.12 150);
+
+  /* La regla. Tiene sus propios tokens porque es la pantalla estrella y su
+     contraste no puede depender de que alguien recuerde que el gris de los
+     ticks tambien se usa en otro lado. */
+  --bs-ruler-track: oklch(93% 0.008 80);
+  --bs-ruler-tick: oklch(70% 0.01 80);
+  --bs-ruler-tick-strong: oklch(40% 0.015 75);
+}
+
+/* Sin eleccion explicita, se sigue al sistema. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bs-surface-0: oklch(17% 0.008 70);
+    --bs-surface-1: oklch(21% 0.009 70);
+    --bs-surface-2: oklch(26% 0.01 70);
+
+    --bs-ink-primary: oklch(95% 0.006 85);
+    --bs-ink-secondary: oklch(75% 0.008 80);
+    --bs-ink-muted: oklch(62% 0.008 80);
+
+    --bs-border-subtle: oklch(30% 0.01 75);
+    --bs-border-strong: oklch(52% 0.012 75);
+
+    --bs-accent-base: oklch(75% 0.14 72);
+    --bs-accent-strong: oklch(84% 0.13 78);
+    --bs-accent-soft: oklch(30% 0.05 70);
+    --bs-accent-ink: oklch(18% 0.02 70);
+
+    --bs-danger: oklch(68% 0.17 27);
+    --bs-danger-soft: oklch(28% 0.06 27);
+    --bs-warning: oklch(75% 0.14 80);
+    --bs-success: oklch(70% 0.13 152);
+
+    --bs-ruler-track: oklch(27% 0.01 75);
+    --bs-ruler-tick: oklch(45% 0.012 78);
+    --bs-ruler-tick-strong: oklch(80% 0.01 80);
+  }
+}
+
+/* La eleccion explicita gana en los dos sentidos. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bs-surface-0: oklch(17% 0.008 70);
+  --bs-surface-1: oklch(21% 0.009 70);
+  --bs-surface-2: oklch(26% 0.01 70);
+
+  --bs-ink-primary: oklch(95% 0.006 85);
+  --bs-ink-secondary: oklch(75% 0.008 80);
+  --bs-ink-muted: oklch(62% 0.008 80);
+
+  --bs-border-subtle: oklch(30% 0.01 75);
+  --bs-border-strong: oklch(52% 0.012 75);
+
+  --bs-accent-base: oklch(75% 0.14 72);
+  --bs-accent-strong: oklch(84% 0.13 78);
+  --bs-accent-soft: oklch(30% 0.05 70);
+  --bs-accent-ink: oklch(18% 0.02 70);
+
+  --bs-danger: oklch(68% 0.17 27);
+  --bs-danger-soft: oklch(28% 0.06 27);
+  --bs-warning: oklch(75% 0.14 80);
+  --bs-success: oklch(70% 0.13 152);
+
+  --bs-ruler-track: oklch(27% 0.01 75);
+  --bs-ruler-tick: oklch(45% 0.012 78);
+  --bs-ruler-tick-strong: oklch(80% 0.01 80);
+}
+
+@theme inline {
+  --color-surface-0: var(--bs-surface-0);
+  --color-surface-1: var(--bs-surface-1);
+  --color-surface-2: var(--bs-surface-2);
+
+  --color-ink: var(--bs-ink-primary);
+  --color-ink-secondary: var(--bs-ink-secondary);
+  --color-ink-muted: var(--bs-ink-muted);
+
+  --color-border-subtle: var(--bs-border-subtle);
+  --color-border-strong: var(--bs-border-strong);
+
+  --color-accent: var(--bs-accent-base);
+  --color-accent-strong: var(--bs-accent-strong);
+  --color-accent-soft: var(--bs-accent-soft);
+  --color-accent-ink: var(--bs-accent-ink);
+
+  --color-danger: var(--bs-danger);
+  --color-danger-soft: var(--bs-danger-soft);
+  --color-warning: var(--bs-warning);
+  --color-success: var(--bs-success);
+
+  --color-ruler-track: var(--bs-ruler-track);
+  --color-ruler-tick: var(--bs-ruler-tick);
+  --color-ruler-tick-strong: var(--bs-ruler-tick-strong);
+}
+
+@layer base {
+  html {
+    /* La PWA se usa a pantalla completa en el telefono; `dvh` evita que la
+       barra del navegador tape el boton de nueva marca. */
+    height: 100dvh;
+  }
+
+  body {
+    background-color: var(--bs-surface-0);
+    color: var(--bs-ink-primary);
+    font-family: system-ui, sans-serif;
+    /* Se toca con guantes: el highlight azul del tap sobra. */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* El foco siempre visible: se navega con teclado y se audita por eso. */
+  :focus-visible {
+    outline: 2px solid var(--bs-accent-base);
+    outline-offset: 2px;
+  }
+
+  /* Numeros de ancho fijo para marcas y distancias: sin esto, una columna de
+     valores baila al cambiar de 9 a 10. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
