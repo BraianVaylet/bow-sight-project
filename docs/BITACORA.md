@@ -70,8 +70,17 @@ y no queda **nada**, ni un boton para recargar.
 tan imposible de acertar con guantes como un boton de 20 px, y encima es el unico camino entre crear
 cuenta y entrar. Se ven igual que antes; lo que crece es el area.
 
+**Y la landing tambien.** El primer test de 44 px solo miraba la PWA — un olvido mio: la landing se
+abre en el telefono de alguien que **todavia no es usuario**, y si no puede tocar "Precios" no llega
+a serlo. El logo, "Precios" y las dos legales median entre 20 y 24 px. La comprobacion ahora recorre
+las cinco pantallas.
+
 - **Lo que si estaba bien:** cero desborde horizontal en las tres anchuras, en claro y en oscuro, en
   las dos apps. La regla entra entera con sus marcas incluso a 360.
+- **Verificado tambien el radio de impacto del arreglo de Tailwind:** el CTA de la landing usaba
+  `buttonClasses()` desde siempre y se veia como texto en negrita; ahora mide 52 px, con su fondo de
+  acento y su radio. Cambiar la generacion de CSS toca **todo** lo estilado de las dos apps, asi que
+  no alcanzaba con medir alturas de controles.
 - **Nota de herramienta:** el `tsconfig.e2e.json` ahora incluye `lib: DOM`. El cuerpo de
   `page.evaluate` corre en el navegador, no en Node.
 

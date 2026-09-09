@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@bow-sight/ui';
+import { textLinkClasses, ThemeProvider } from '@bow-sight/ui';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Head } from 'vite-react-ssg';
 import { seoOf, SITE_URL } from './seo.js';
@@ -23,10 +23,13 @@ export function Layout() {
       <div className="bg-surface-0 min-h-dvh">
         <header className="border-border-subtle border-b">
           <nav className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-            <Link to="/" className="text-ink font-semibold">
+            <Link
+              to="/"
+              className={textLinkClasses({ className: 'text-ink font-semibold no-underline' })}
+            >
               Bow Sight
             </Link>
-            <Link to="/precios" className="text-ink-secondary text-sm underline">
+            <Link to="/precios" className={textLinkClasses({ className: 'text-sm' })}>
               Precios
             </Link>
           </nav>
@@ -35,11 +38,11 @@ export function Layout() {
         <Outlet />
 
         <footer className="border-border-subtle border-t">
-          <div className="text-ink-muted mx-auto flex max-w-4xl flex-wrap gap-4 px-4 py-8 text-sm">
-            <Link to="/terminos" className="underline">
+          <div className="text-ink-muted mx-auto flex max-w-4xl flex-wrap items-center gap-4 px-4 py-4 text-sm">
+            <Link to="/terminos" className={textLinkClasses()}>
               Términos
             </Link>
-            <Link to="/privacidad" className="underline">
+            <Link to="/privacidad" className={textLinkClasses()}>
               Privacidad
             </Link>
           </div>
