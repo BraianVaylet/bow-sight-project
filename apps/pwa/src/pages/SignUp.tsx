@@ -17,6 +17,15 @@ export function SignUp() {
   const set = (campo: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [campo]: e.target.value }));
 
+  /**
+   * 🔴 El largo se verifica **mientras escribe**, no al enviar.
+   *
+   * La regla es del servidor y ahi se sigue aplicando; esto solo evita que el
+   * arquero complete tres campos, apriete, y recien entonces se entere de que le
+   * faltaban caracteres.
+   */
+  const claveCorta = form.password.length > 0 && form.password.length < 12;
+
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
@@ -65,6 +74,7 @@ export function SignUp() {
             label="Contraseña"
             required
             hint="Al menos 12 caracteres. Una frase que recuerdes sirve más que un jeroglífico."
+            {...(claveCorta ? { error: `Te faltan ${12 - form.password.length} caracteres.` } : {})}
           >
             {(aria) => (
               <Input
@@ -77,7 +87,7 @@ export function SignUp() {
             )}
           </Field>
 
-          <Button type="submit" tone="accent" size="lg" block disabled={enviando}>
+          <Button type="submit" tone="accent" size="lg" block disabled={enviando || claveCorta}>
             {enviando ? 'Creando…' : 'Crear cuenta'}
           </Button>
         </form>

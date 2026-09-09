@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:sandbox": "tsx scripts/dev-sandbox.ts",
+    "dev:apps": "turbo run dev --filter @bow-sight/pwa --filter @bow-sight/landing",
     "build": "turbo run build",
     "test": "turbo run test && vitest run --config vitest.scripts.config.ts",
     "test:coverage": "turbo run test:coverage && vitest run --config vitest.scripts.config.ts --coverage",

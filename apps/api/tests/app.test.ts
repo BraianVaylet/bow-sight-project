@@ -160,3 +160,35 @@ describe('robustez de /ready', () => {
     await expect(res.json()).resolves.toMatchObject({ checks: { database: false } });
   });
 });
+
+describe('sin base', () => {
+  /**
+   * 🔴 El sintoma que motivo esto: alguien levanta la API sin Mongo, entra a la
+   * PWA y lee "no pudimos verificar tu sesion" con un **404**. Ese 404 miente
+   * sobre la causa — manda a buscar una ruta que falta cuando lo que falta es la
+   * base — y no hay forma de deducir el problema real desde la pantalla.
+   */
+  const sinBase = makeApp({ databaseReady: false });
+
+  it('🔴 el contrato del producto responde 503, no 404', async () => {
+    for (const path of ['/api/v1/auth/me', '/api/v1/sights', '/api/v1/equipment/arrow-sets']) {
+      const res = await sinBase.request(path);
+      const body = (await res.json()) as { error: { code: string } };
+
+      expect(res.status, path).toBe(503);
+      expect(body.error.code, path).toBe('BS-SYS-503-006');
+    }
+  });
+
+  it('una ruta que de verdad no existe sigue siendo 404', async () => {
+    const res = await sinBase.request('/no-existe');
+    const body = (await res.json()) as { error: { code: string } };
+
+    expect(res.status).toBe(404);
+    expect(body.error.code).toBe('BS-SYS-404-002');
+  });
+
+  it('el contrato se sigue leyendo: no necesita base', async () => {
+    expect((await sinBase.request('/api/v1/docs')).status).toBe(200);
+  });
+});
