@@ -1,5 +1,5 @@
 import { ApiError } from '@bow-sight/client';
-import { Alert, Button, Card, Field, Input } from '@bow-sight/ui';
+import { Alert, Button, Card, Field, Input, textLinkClasses } from '@bow-sight/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -69,10 +69,10 @@ export function SignIn() {
       </Card>
 
       <div className="flex flex-col gap-2 text-center text-sm">
-        <Link to="/recuperar" className="text-ink-secondary underline">
+        <Link to="/recuperar" className={textLinkClasses()}>
           ¿Olvidaste tu contraseña?
         </Link>
-        <Link to="/crear-cuenta" className="text-ink-secondary underline">
+        <Link to="/crear-cuenta" className={textLinkClasses()}>
           Crear una cuenta
         </Link>
       </div>

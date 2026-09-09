@@ -1,5 +1,5 @@
 import { ApiError } from '@bow-sight/client';
-import { Alert, Card, EmptyState, Spinner, buttonClasses } from '@bow-sight/ui';
+import { Alert, Card, EmptyState, Spinner, buttonClasses, textLinkClasses } from '@bow-sight/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api, type Sight } from '../app/api.js';
@@ -27,7 +27,7 @@ export function Sights() {
     <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 p-4">
       <header className="flex items-center justify-between">
         <h1 className="text-ink text-2xl font-semibold">Mis miras</h1>
-        <Link to="/perfil" className="text-ink-secondary text-sm underline">
+        <Link to="/perfil" className={textLinkClasses({ className: 'text-sm' })}>
           Perfil
         </Link>
       </header>

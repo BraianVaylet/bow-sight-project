@@ -2,7 +2,11 @@
   "extends": "@bow-sight/config/tsconfig/node.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"]
+    "types": ["node"],
+    // `DOM` porque el cuerpo de `page.evaluate` **corre en el navegador**, no en
+    // Node: sin esto, `document` y `getComputedStyle` no existen para el
+    // typechecker aunque en runtime esten.
+    "lib": ["ES2023", "DOM", "DOM.Iterable"]
   },
   "include": ["e2e/**/*.ts", "playwright.config.ts"]
 }

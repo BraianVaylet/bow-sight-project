@@ -23,6 +23,58 @@ No se registra: refactors internos sin impacto observable ni cambios de formato.
 
 ---
 
+## 2026-09-09 — Responsive verificado: tres bugs que estaban a la vista y nadie miro
+
+- **Modulo:** `pwa` · `landing` · `ui`
+- **Tipo:** fix
+- **Commit/PR:** —
+- **Trello:** https://trello.com/c/09SUee2u (F0-17) · https://trello.com/c/jCphaxPE (F0-18)
+- **Que cambio:** el `Definition of Done` pide **responsive 360/768/1440** y esa casilla estaba sin
+  marcar en el PR #1. Al ir a verificarlo aparecieron tres bugs, ninguno sutil.
+- **Por que se verifica midiendo y no mirando:** una captura la mira una persona una vez y despues
+  nadie. `e2e/responsive.spec.ts` corre en cada push: 80 tests entre las tres anchuras, los dos
+  temas, las dos apps, y falla nombrando el elemento exacto que se desborda.
+- **Impacto:** ninguno sobre el modelo de datos ni la API.
+
+### 🔴 La regla de los 44 px nunca estuvo en efecto
+
+`min-h-11` y `min-h-13` estaban escritos en `@bow-sight/ui`, documentados en el `CLAUDE.md` de la
+PWA y repetidos en la spec — y **Tailwind no los generaba**. Tailwind v4 descubre las fuentes solo
+pero ignora `node_modules`, y con pnpm `@bow-sight/ui` es un symlink que vive justamente ahi. Cero
+ocurrencias de `min-h-11` en el CSS construido: **todos** los botones y campos de las dos apps
+median 21 px de alto contra los 44 que exige usar la app de pie y con guantes.
+
+Se arregla con `@source '../../../packages/ui/src'` en el `styles.css` de cada app. Va **despues**
+de los `@import` y no entre ellos: en CSS todos los `@import` van primero, y ponerlo en el medio
+invalida los que siguen — lo que deja la app sin los tokens del tema. Ese fue el primer intento, y
+el sintoma fue peor que el problema original.
+
+### 🔴 Con la API caida, la pantalla quedaba en blanco
+
+`SoloPublica` hacia `return null` mientras averiguaba si habia sesion. Con un 5xx el cliente
+reintenta, asi que el arquero se quedaba mirando **una pantalla vacia** —indistinguible de un
+telefono colgado— y despues, si el error persistia, `Privada` lo mandaba a entrar.
+
+Mandarlo a entrar es lo peor de las dos cosas: le dice que se deslogueo cuando lo unico que pasa es
+que el servidor no contesta. Ahora **"no hay sesion" y "no pudimos preguntar" se tratan distinto**:
+la segunda muestra el error con un boton de reintentar, y distingue el "sin conexion" del "se rompio
+algo nuestro". Entrar y crear cuenta siguen viendose igual aunque falle la consulta: son publicas, y
+bloquear el login por un problema nuestro seria dejarlo afuera.
+
+Ademas hay un `ErrorBoundary` en la raiz: sin el, cualquier error de render desmonta el arbol entero
+y no queda **nada**, ni un boton para recargar.
+
+### Los enlaces de texto tambien se tocan
+
+`textLinkClasses()` en `@bow-sight/ui`, junto a `buttonClasses()`. Un "ya tengo cuenta" de 20 px es
+tan imposible de acertar con guantes como un boton de 20 px, y encima es el unico camino entre crear
+cuenta y entrar. Se ven igual que antes; lo que crece es el area.
+
+- **Lo que si estaba bien:** cero desborde horizontal en las tres anchuras, en claro y en oscuro, en
+  las dos apps. La regla entra entera con sus marcas incluso a 360.
+- **Nota de herramienta:** el `tsconfig.e2e.json` ahora incluye `lib: DOM`. El cuerpo de
+  `page.evaluate` corre en el navegador, no en Node.
+
 ## 2026-09-08 — OpenAPI generado desde el registro de rutas
 
 - **Modulo:** `api`

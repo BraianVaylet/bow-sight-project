@@ -8,7 +8,9 @@ Documento de la app: [`docs/apps/pwa.md`](../../docs/apps/pwa.md).
 De pie, con guantes, al sol, entre dos tandas, y sin señal. Eso no es una anecdota: decide casi
 todas las reglas de abajo.
 
-- **Todo lo tocable mide 44x44 px como minimo.**
+- **Todo lo tocable mide 44x44 px como minimo** — botones **y enlaces de texto**. Para los enlaces
+  esta `textLinkClasses()` de `@bow-sight/ui`: se ven como texto subrayado, pero el area es de 44 px.
+  Lo verifica `e2e/responsive.spec.ts` midiendo, no mirando.
 - **Contraste AA verificado**, en claro y en oscuro. Lo aplica un test de `@bow-sight/ui`.
 - **Las acciones sobre marcas son optimistas.** Esperar dos segundos mirando un spinner en la linea
   de tiro es el peor pecado de este producto.
@@ -29,8 +31,13 @@ todas las reglas de abajo.
 4. Frontera de estado: **Query = servidor · Zustand = UI · Nuqs = filtros urleables.** Nunca
    duplicar estado de servidor en Zustand.
 5. Sin logica de negocio en componentes. El math vive en `@bow-sight/domain`.
-6. Un elemento que **navega** es un `<a>`, no un `<button>` con `onClick`: `buttonClasses()` de
-   `@bow-sight/ui` comparte el estilo sin robarle el rol.
+6. Un elemento que **navega** es un `<a>`, no un `<button>` con `onClick`: `buttonClasses()` y
+   `textLinkClasses()` de `@bow-sight/ui` comparten el estilo sin robarle el rol.
+7. 🔴 **Nunca `return null` mientras se carga.** Una pantalla vacia es indistinguible de un telefono
+   colgado. Va el spinner, siempre.
+8. 🔴 **"No hay sesion" y "no pudimos preguntar" son cosas distintas.** Un 500 al pedir `/auth/me`
+   **no** manda a entrar: eso le diria al arquero que se deslogueo cuando el problema es nuestro.
+   Se muestra el error con un boton de reintentar.
 
 ## Rutas publicas
 
@@ -41,6 +48,18 @@ todas las reglas de abajo.
 
 🔴 Las dos son **publicas a proposito**: quien abre el mail en otro dispositivo no tiene sesion, y
 mostrarle un login en vez de la confirmacion seria un callejon.
+
+## Tailwind y `packages/ui`
+
+🔴 `src/styles.css` lleva un **`@source '../../../packages/ui/src'`**. Sin el, Tailwind no genera
+ninguna clase que solo aparezca en `@bow-sight/ui`: descubre las fuentes solo, pero ignora
+`node_modules`, y con pnpm el paquete es un symlink que vive justamente ahi.
+
+El sintoma no es un error: es que `min-h-11` no existe y **todos** los botones y campos quedan de
+21 px de alto. La regla de los 44 px estuvo escrita y sin efecto hasta que un test la midio.
+
+El `@source` va **despues** de los `@import`, no entre ellos: en CSS todos los `@import` van primero,
+y una regla en el medio invalida los que siguen — lo que deja la app sin los tokens del tema.
 
 ## Comandos
 

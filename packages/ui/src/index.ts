@@ -7,6 +7,7 @@ export type { Theme, ThemeProviderProps } from './theme.js';
 
 export { Button } from './Button.js';
 export { buttonClasses } from './buttonStyles.js';
+export { textLinkClasses } from './linkStyles.js';
 export type { ButtonProps, ButtonSize, ButtonTone } from './Button.js';
 
 export { Card } from './Card.js';

@@ -1,5 +1,5 @@
 import { ApiError } from '@bow-sight/client';
-import { Alert, Button, Card, Field, Input, buttonClasses } from '@bow-sight/ui';
+import { Alert, Button, Card, Field, Input, buttonClasses, textLinkClasses } from '@bow-sight/ui';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../app/api.js';
@@ -54,7 +54,7 @@ export function RequestReset() {
         )}
       </Card>
 
-      <Link to="/entrar" className="text-ink-secondary text-center text-sm underline">
+      <Link to="/entrar" className={textLinkClasses({ className: 'self-center text-sm' })}>
         Volver
       </Link>
     </main>
