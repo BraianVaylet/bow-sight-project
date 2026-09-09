@@ -1,2 +1,18 @@
 @import 'tailwindcss';
 @import '@bow-sight/ui/styles.css';
+
+/**
+ * 🔴 Sin esto, Tailwind no genera **ninguna** clase que solo aparezca en
+ * `@bow-sight/ui`.
+ *
+ * Tailwind v4 descubre las fuentes solo, pero ignora `node_modules` — y en un
+ * monorepo con pnpm, `@bow-sight/ui` es un symlink que vive justamente ahi. El
+ * sintoma no es un error: es que `min-h-11` no existe y todos los botones y
+ * campos quedan de 21 px de alto, contra los 44 que exige usar la app de pie y
+ * con guantes.
+ *
+ * 🔴 Va **despues** de los `@import`, no entre ellos: en CSS todos los `@import`
+ * tienen que ir primero, y una regla en el medio invalida los que siguen — lo
+ * que deja la app entera sin los tokens del tema.
+ */
+@source '../../../packages/ui/src';

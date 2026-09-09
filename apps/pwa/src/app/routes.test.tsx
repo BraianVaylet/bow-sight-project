@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { ApiError } from '@bow-sight/client';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppRoutes } from './routes.js';
 
@@ -98,5 +100,70 @@ describe('guardas de ruta', () => {
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument();
     });
+  });
+});
+
+describe('cuando la API no contesta', () => {
+  // 🔴 "No hay sesion" y "no pudimos preguntar" son cosas distintas, y la app
+  // tiene que tratarlas distinto. Con la API caida el arquero veia una pantalla
+  // **en blanco**, que en la linea de tiro es indistinguible de un telefono
+  // colgado.
+  const caido = () =>
+    get.mockImplementation(() =>
+      Promise.reject(
+        new ApiError({ status: 500, code: 'BS-SYS-500-005', messageKey: 'errors.system.internal' }),
+      ),
+    );
+
+  it('🔴 una ruta privada lo dice y ofrece reintentar, no manda a entrar', async () => {
+    // Mandarlo a entrar le diria que se deslogueo cuando lo unico que pasa es
+    // que el servidor no contesta.
+    caido();
+    pintar('/');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/no pudimos verificar tu sesion/i);
+    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Entrar' })).not.toBeInTheDocument();
+  });
+
+  it('sin red lo dice con esas palabras', async () => {
+    get.mockImplementation(() => Promise.reject(ApiError.network()));
+    pintar('/');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/sin conexion/i);
+  });
+
+  it('reintentar vuelve a preguntar, y si anda entra', async () => {
+    caido();
+    pintar('/');
+    await screen.findByRole('button', { name: 'Reintentar' });
+
+    get.mockImplementation((path: string) =>
+      path === '/auth/me' ? Promise.resolve(SESION) : Promise.resolve([]),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await screen.findByRole('heading', { name: 'Mis miras' })).toBeInTheDocument();
+  });
+
+  it('🔴 entrar se puede ver igual: es publica y el problema es nuestro', async () => {
+    // Bloquear el login porque no pudimos preguntar si ya habia sesion seria
+    // dejarlo afuera por un problema que no es suyo.
+    caido();
+    pintar('/entrar');
+
+    expect(await screen.findByRole('heading', { name: 'Entrar' })).toBeInTheDocument();
+  });
+
+  it('🔴 mientras averigua muestra que esta cargando, nunca una pantalla vacia', async () => {
+    let responder: (v: unknown) => void = () => {};
+    get.mockReturnValue(new Promise((r) => (responder = r)));
+    const { container } = pintar('/entrar');
+
+    expect(await screen.findByText('Cargando')).toBeInTheDocument();
+    expect(container.textContent).not.toBe('');
+
+    responder(null);
+    expect(await screen.findByRole('heading', { name: 'Entrar' })).toBeInTheDocument();
   });
 });

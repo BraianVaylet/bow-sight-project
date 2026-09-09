@@ -1,5 +1,5 @@
 import { ApiError } from '@bow-sight/client';
-import { Alert, Button, Card, Field, Input } from '@bow-sight/ui';
+import { Alert, Button, Card, Field, Input, textLinkClasses } from '@bow-sight/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -83,7 +83,7 @@ export function SignUp() {
         </form>
       </Card>
 
-      <Link to="/entrar" className="text-ink-secondary text-center text-sm underline">
+      <Link to="/entrar" className={textLinkClasses({ className: 'self-center text-sm' })}>
         Ya tengo cuenta
       </Link>
     </main>
