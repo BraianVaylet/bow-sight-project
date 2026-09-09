@@ -133,23 +133,27 @@ for (const tema of TEMAS) {
 }
 
 test.describe('lo tocable se puede tocar', () => {
-  // Solo en el ancho angosto: es donde la app se usa de verdad, de pie y con
-  // guantes. En escritorio hay mouse y el problema no existe.
+  // Solo en el ancho angosto: es donde el dedo es el problema. En escritorio hay
+  // mouse y la regla no aplica.
   test.use({ viewport: { width: 360, height: 800 } });
 
-  test('🔴 en la PWA nada tocable baja de 44 px de alto', async ({ page }) => {
-    await page.goto('http://localhost:5173/entrar');
-    await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible();
+  const PANTALLAS: [nombre: string, url: string, encabezado: string | RegExp][] = [
+    ['entrar', 'http://localhost:5173/entrar', 'Entrar'],
+    ['crear cuenta', 'http://localhost:5173/crear-cuenta', 'Crear cuenta'],
+    // 🔴 La landing tambien. Se abre en el telefono de alguien que **todavia no
+    // es usuario**: si no puede tocar "Precios", no llega a serlo.
+    ['la home de la landing', 'http://localhost:5176/', /marcas de tu mira/i],
+    ['precios', 'http://localhost:5176/precios', 'Free'],
+    ['una legal', 'http://localhost:5176/terminos', /términos de uso/i],
+  ];
 
-    const chicos = await tocablesChicos(page);
-    expect(chicos, `controles por debajo de 44 px:\n${chicos.join('\n')}`).toEqual([]);
-  });
+  for (const [nombre, url, encabezado] of PANTALLAS) {
+    test(`🔴 en ${nombre} nada tocable baja de 44 px`, async ({ page }) => {
+      await page.goto(url);
+      await expect(page.getByRole('heading', { name: encabezado }).first()).toBeVisible();
 
-  test('y tampoco al crear la cuenta', async ({ page }) => {
-    await page.goto('http://localhost:5173/crear-cuenta');
-    await expect(page.getByRole('heading', { name: 'Crear cuenta' })).toBeVisible();
-
-    const chicos = await tocablesChicos(page);
-    expect(chicos, `controles por debajo de 44 px:\n${chicos.join('\n')}`).toEqual([]);
-  });
+      const chicos = await tocablesChicos(page);
+      expect(chicos, `controles por debajo de 44 px:\n${chicos.join('\n')}`).toEqual([]);
+    });
+  }
 });
