@@ -43,7 +43,23 @@ const TEXTOS: Record<string, (p: Record<string, string | number>) => string> = {
   'errors.equipment.notFound': () => 'No encontramos ese equipo.',
   'errors.equipment.incompleteSpecs': () =>
     'Faltan datos del equipo para estimar el tiro: velocidad, peso de la flecha y altura del peep.',
-  'errors.system.validation': () => 'Revisá los datos: hay algo que no cierra.',
+  /**
+   * 🔴 Dice **cual** campo. La API manda `params.field` desde el primer issue de
+   * Zod, y la version generica —"revisá los datos"— tiraba ese dato a la basura
+   * y dejaba al arquero adivinando en un formulario de tres campos.
+   */
+  'errors.system.validation': (p) => {
+    const CAMPOS: Record<string, string> = {
+      email: 'Revisá el email: no parece una direccion valida.',
+      password: 'La contraseña tiene que tener al menos 12 caracteres.',
+      newPassword: 'La contraseña nueva tiene que tener al menos 12 caracteres.',
+      name: 'Falta el nombre.',
+      distanceM: 'Revisá la distancia.',
+      scaleValueMm: 'Revisá la marca: cae fuera de la escala de la mira.',
+      arrowSetId: 'Elegí un set de flechas.',
+    };
+    return CAMPOS[String(p['field'])] ?? 'Revisá los datos: hay algo que no cierra.';
+  },
   'errors.system.rateLimited': () => 'Demasiadas peticiones. Esperá un momento.',
   'errors.system.internal': () => 'Se rompió algo de nuestro lado. Probá de nuevo en un momento.',
 };

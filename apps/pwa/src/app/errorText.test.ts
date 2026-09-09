@@ -34,6 +34,21 @@ describe('el puente de traduccion', () => {
     expect(() => textOf()(error('errors.sight.marksOutsideNewRange'))).not.toThrow();
   });
 
+  it('🔴 un error de validacion dice cual campo, no "revisá los datos"', () => {
+    // La API manda `params.field`. Tirarlo deja al arquero adivinando: fue justo
+    // lo que paso al registrarse con una contraseña de menos de 12 caracteres.
+    const t = textOf();
+    expect(t(error('errors.system.validation', { field: 'password' }))).toMatch(/12 caracteres/);
+    expect(t(error('errors.system.validation', { field: 'email' }))).toMatch(/email/i);
+    expect(t(error('errors.system.validation', { field: 'name' }))).toMatch(/nombre/i);
+  });
+
+  it('un campo que no tiene texto propio cae en el generico, no en el codigo', () => {
+    expect(textOf()(error('errors.system.validation', { field: 'locale' }))).toBe(
+      'Revisá los datos: hay algo que no cierra.',
+    );
+  });
+
   it('🔴 una clave sin traducir cae en el codigo, no en una pantalla muda', () => {
     const sinTraducir = new ApiError({
       status: 500,

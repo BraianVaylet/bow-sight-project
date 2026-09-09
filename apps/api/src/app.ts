@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { createErrorHandler, createNotFoundHandler } from './http/errorHandler.js';
+import { unavailableError } from './http/errors.js';
 import { requestId } from './http/requestId.js';
 import { securityHeaders } from './http/security.js';
 import { requireAuth } from './auth/middleware.js';
@@ -61,6 +62,24 @@ export function createApp(deps: AppDeps) {
     protegido.use('*', requireAuth(deps.auth));
     protegido.route('/', deps.modules.routes);
     v1.route('/', protegido);
+  }
+
+  /**
+   * 🔴 Sin base, el contrato del producto responde **503, no 404**.
+   *
+   * Sin Mongo no se montan `auth` ni los modulos, asi que todo `/api/v1/*` caia
+   * en el "no encontrado" generico. Y ese 404 miente sobre la causa: manda a
+   * buscar una ruta que falta cuando lo que falta es la configuracion. Alguien
+   * probando la app en local ve "no pudimos verificar tu sesion" y no tiene como
+   * saber que le falta levantar la base.
+   *
+   * Va **despues** del contrato —que si funciona sin base— y como `all`, asi que
+   * no entra ni en el registro de rutas ni en el OpenAPI.
+   */
+  if (!deps.auth || !deps.modules) {
+    v1.all('*', () => {
+      throw unavailableError();
+    });
   }
 
   app.route('/api/v1', v1);

@@ -37,8 +37,13 @@ la API, el contrato, y un **buzon** (`/e2e/mails`) de donde se saca el enlace de
 no se manda correo de verdad. Con eso corriendo, en otra terminal:
 
 ```bash
-pnpm dev
+pnpm dev:apps
 ```
+
+🔴 **`dev:apps`, no `dev`.** `pnpm dev` levanta **su propia API** en el mismo puerto 3000, y esa
+arranca sin base: gana el que llegue primero, y si gana la pelada, `/api/v1/*` responde 503 y no se
+puede ni entrar. `dev:apps` levanta solo la PWA y la landing, que es lo que falta cuando la API ya
+esta corriendo en el sandbox.
 
 🔴 **Los datos se pierden al cerrarlo, y es a proposito.** Un sandbox que sobrevive tienta a usarlo
 como si fuera un ambiente, y despues alguien se apoya en datos que nadie puede reproducir. Para
@@ -76,6 +81,7 @@ La documentacion de la API queda en `http://localhost:3000/api/v1/docs`.
 | -------------------- | ------------------------------------------------------- |
 | `pnpm dev`           | Las tres apps en watch                                  |
 | `pnpm dev:sandbox`   | La API con una base efimera: para probar sin instalar   |
+| `pnpm dev:apps`      | Solo la PWA y la landing: acompaña a `dev:sandbox`      |
 | `pnpm test`          | Unitarios e integracion de todos los paquetes           |
 | `pnpm test:coverage` | Lo mismo, aplicando el gate de cobertura por criticidad |
 | `pnpm test:e2e`      | Los caminos criticos en Playwright, con su base efimera |

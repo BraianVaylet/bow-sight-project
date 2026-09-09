@@ -167,3 +167,26 @@ describe('recuperar la contraseña', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/no sirve o ya venció/i);
   });
 });
+
+describe('la contraseña corta se avisa antes de enviar', () => {
+  it('🔴 dice cuantos caracteres faltan mientras escribe', async () => {
+    // La regla es del servidor y ahi se sigue aplicando. Esto evita completar
+    // tres campos, apretar, y recien entonces enterarse.
+    pintar(<SignUp />);
+
+    await userEvent.type(screen.getByLabelText(/contraseña/i), 'corta');
+
+    expect(screen.getByText(/te faltan 7 caracteres/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Crear cuenta' })).toBeDisabled();
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it('con doce o mas, deja enviar', async () => {
+    pintar(<SignUp />);
+
+    await userEvent.type(screen.getByLabelText(/contraseña/i), 'una-frase-larga');
+
+    expect(screen.queryByText(/te faltan/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Crear cuenta' })).toBeEnabled();
+  });
+});
