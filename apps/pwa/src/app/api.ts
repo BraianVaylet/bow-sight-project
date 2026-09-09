@@ -28,3 +28,32 @@ export interface Sight {
   scaleUnit: 'cm' | 'in' | 'click';
   status: 'active' | 'locked' | 'archived';
 }
+
+export interface ArrowSet {
+  _id: string;
+  name: string;
+}
+
+export interface Mark {
+  _id: string;
+  arrowSetId: string;
+  /** 🔴 Canonico: metros. */
+  distanceM: number;
+  /** 🔴 Canonico: milimetros. La conversion a cm ocurre solo al mostrar. */
+  scaleValueMm: number;
+  origin: 'measured';
+  updatedAt: string;
+}
+
+/** Lo que devuelve la calculadora. El math lo corre el servidor. */
+export interface Calculo {
+  distanceM: number;
+  horizontalDistanceM: number;
+  scaleValueMm: number;
+  /** `false` => extrapolada, fuera de lo que el arquero midio. Se muestra con `≈`. */
+  interpolated: boolean;
+  withinScale: boolean;
+  /** Residuo maximo del ajuste: la semilla del Mark Doctor (F1-E). */
+  fitQuality: number;
+  computed: { distanceM: number; scaleValue: number; interpolated: boolean }[];
+}
