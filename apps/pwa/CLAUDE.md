@@ -39,6 +39,21 @@ todas las reglas de abajo.
    **no** manda a entrar: eso le diria al arquero que se deslogueo cuando el problema es nuestro.
    Se muestra el error con un boton de reintentar.
 
+## Pantallas
+
+| Ruta           | Que es                                                          |
+| -------------- | --------------------------------------------------------------- |
+| `/`            | Las miras del arquero                                           |
+| `/miras/nueva` | Crear una mira: nombre y el recorrido de su escala              |
+| `/miras/:id`   | **La pantalla del producto**: la regla, las marcas y el calculo |
+| `/equipo`      | Los sets de flechas                                             |
+
+🔴 `/miras/nueva` se declara **antes** que `/miras/:id`. Al reves, "nueva" se leeria como un id y la
+pantalla pediria una mira que no existe.
+
+🔴 `/equipo` no es configuracion opcional: **una marca pertenece a un set de flechas**, no a la mira
+sola. Sin un set cargado no se puede anotar nada, asi que esta en el camino minimo.
+
 ## Rutas publicas
 
 `/entrar`, `/crear-cuenta`, `/recuperar` — y dos que existen porque un mail lleva ahi:

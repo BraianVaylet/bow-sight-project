@@ -24,6 +24,28 @@ no necesitan nada instalado (levantan el suyo en memoria).
 corepack enable && pnpm install
 ```
 
+### La forma rapida: sin instalar Mongo
+
+Para **probar la app**, no hace falta base ni `.env`:
+
+```bash
+pnpm dev:sandbox
+```
+
+Levanta la API contra un Mongo **efimero en memoria, con replica set**, e imprime tres direcciones:
+la API, el contrato, y un **buzon** (`/e2e/mails`) de donde se saca el enlace de verificacion, porque
+no se manda correo de verdad. Con eso corriendo, en otra terminal:
+
+```bash
+pnpm dev
+```
+
+🔴 **Los datos se pierden al cerrarlo, y es a proposito.** Un sandbox que sobrevive tienta a usarlo
+como si fuera un ambiente, y despues alguien se apoya en datos que nadie puede reproducir. Para
+trabajar sobre datos que duren, seguir con lo de abajo.
+
+### Con tu propia base
+
 ```bash
 cp .env.example .env
 ```
@@ -53,6 +75,7 @@ La documentacion de la API queda en `http://localhost:3000/api/v1/docs`.
 | Comando              | Que hace                                                |
 | -------------------- | ------------------------------------------------------- |
 | `pnpm dev`           | Las tres apps en watch                                  |
+| `pnpm dev:sandbox`   | La API con una base efimera: para probar sin instalar   |
 | `pnpm test`          | Unitarios e integracion de todos los paquetes           |
 | `pnpm test:coverage` | Lo mismo, aplicando el gate de cobertura por criticidad |
 | `pnpm test:e2e`      | Los caminos criticos en Playwright, con su base efimera |

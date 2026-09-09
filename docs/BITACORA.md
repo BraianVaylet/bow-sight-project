@@ -23,6 +23,65 @@ No se registra: refactors internos sin impacto observable ni cambios de formato.
 
 ---
 
+## 2026-09-09 — La app hace lo que el producto promete: cargar marcas y calcular
+
+- **Modulo:** `pwa` · `infra`
+- **Tipo:** feature
+- **Commit/PR:** —
+- **Trello:** https://trello.com/c/09SUee2u (F0-17), que ya anotaba esto como lo que seguia
+- **Que cambio:** hasta hoy la PWA dejaba crear una cuenta y **ver una lista vacia**. Peor: `Sights`
+  ya enlazaba a `/miras/nueva` y a `/miras/:id`, y ninguna de las dos existia — tocarlas rebotaba a
+  la home **en silencio**. Ahora existen las tres pantallas que faltan y el producto se puede usar.
+- **Por que:** era lo que faltaba para poder probarla en local. Una app que registra cuentas y no
+  hace nada mas no se puede evaluar.
+- **Impacto:** ninguno sobre la API ni el modelo de datos: las tres pantallas consumen endpoints que
+  ya existian desde F0-15.
+
+### Las pantallas
+
+| Ruta           | Que es                                                 |
+| -------------- | ------------------------------------------------------ |
+| `/miras/nueva` | Crear una mira: nombre y el recorrido de su escala     |
+| `/miras/:id`   | **La del producto**: la regla, las marcas y el calculo |
+| `/equipo`      | Los sets de flechas                                    |
+
+🔴 `/miras/nueva` se declara **antes** que `/miras/:id`: al reves, "nueva" se leeria como un id y la
+pantalla pediria una mira que no existe. Hay un test para eso.
+
+🔴 `/equipo` no es configuracion opcional. **Una marca pertenece a un set de flechas**, no a la mira
+sola: las mismas distancias con flechas mas pesadas dan otras marcas. Sin un set no se puede anotar
+nada, asi que la pantalla dice eso y deshabilita el boton en vez de dejar escribir dos numeros para
+fallar despues.
+
+🔴 **El calculo lo hace el servidor.** El mismo math esta en `@bow-sight/domain` y podria correr en
+el cliente, pero el servidor es la autoridad sobre lo que el arquero tiene cargado: calcularlo aca
+abriria la puerta a que la app y la hoja impresa digan cosas distintas.
+
+🔴 **La conversion ocurre en el borde.** El arquero escribe centimetros —como esta impreso en su
+mira— y viaja milimetros. Hay un test por pantalla: si alguna mandara centimetros, la escala quedaria
+diez veces chica y no se notaria hasta ver la regla.
+
+### `pnpm dev:sandbox`
+
+Para probar la app ya no hace falta instalar Mongo ni escribir un `.env`: levanta la API contra un
+Mongo **efimero en memoria con replica set**, e imprime la API, el contrato y un **buzon** de donde
+sale el enlace de verificacion.
+
+El arnes es **el mismo** que usan los E2E (`scripts/ephemeral-api.ts`), porque el requisito es el
+mismo: una base de verdad, con transacciones, que no haya que instalar. 🔴 Los datos se pierden al
+cerrarlo, a proposito: un sandbox que sobrevive tienta a usarlo como si fuera un ambiente.
+
+### Verificado corriendolo, no solo en tests
+
+Con las cinco marcas del autor cargadas, a 37 m la app muestra `18.1 cm` y dice **"entre marcas
+tuyas"**; a 70 m dice **"estimada fuera de lo que mediste"**. La regla dibuja las cinco medidas, las
+calculadas intermedias, los 18 m de sala con `≈` y la consulta. A 30 m devuelve exactamente `12.0`,
+que es la marca cargada: la promesa del producto (ADR-001).
+
+- **Tests:** 5 E2E del camino completo (de cuenta nueva a marca calculada) y 20 unitarios de las tres
+  pantallas. El gate de cobertura de la PWA, que estaba en 90/75, **fallo al agregar las pantallas** y
+  se cumplio escribiendo los tests, no bajandolo.
+
 ## 2026-09-09 — Responsive verificado: tres bugs que estaban a la vista y nadie miro
 
 - **Modulo:** `pwa` · `landing` · `ui`

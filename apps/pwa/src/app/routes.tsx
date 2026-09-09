@@ -3,6 +3,9 @@ import { Alert, Button, Spinner } from '@bow-sight/ui';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { EmailVerified } from '../pages/EmailVerified.js';
 import { ConfirmReset, RequestReset } from '../pages/ResetPassword.js';
+import { ArrowSets } from '../pages/ArrowSets.js';
+import { NewSight } from '../pages/NewSight.js';
+import { Sight } from '../pages/Sight.js';
 import { Sights } from '../pages/Sights.js';
 import { SignIn } from '../pages/SignIn.js';
 import { SignUp } from '../pages/SignUp.js';
@@ -110,6 +113,32 @@ export function AppRoutes() {
         element={
           <Privada>
             <Sights />
+          </Privada>
+        }
+      />
+      {/* 🔴 `/miras/nueva` va **antes** que `/miras/:id`: al reves, "nueva" se
+          leeria como un id y la pantalla pediria una mira que no existe. */}
+      <Route
+        path="/miras/nueva"
+        element={
+          <Privada>
+            <NewSight />
+          </Privada>
+        }
+      />
+      <Route
+        path="/miras/:id"
+        element={
+          <Privada>
+            <Sight />
+          </Privada>
+        }
+      />
+      <Route
+        path="/equipo"
+        element={
+          <Privada>
+            <ArrowSets />
           </Privada>
         }
       />
